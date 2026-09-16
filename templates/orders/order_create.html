@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Checkout — ClothBrand{% endblock %}
+{% block content %}
+<div class="container my-4">
+  <h1 class="h4 mb-4">Checkout</h1>
+
+  <div class="row g-5">
+    <div class="col-lg-7">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <h6 class="text-uppercase text-muted small mb-3">Business Details</h6>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">{{ form.company_name.label_tag }} {{ form.company_name }}</div>
+          <div class="col-md-6">{{ form.gst_number.label_tag }} {{ form.gst_number }}</div>
+          <div class="col-md-6">{{ form.full_name.label_tag }} {{ form.full_name }}</div>
+          <div class="col-md-6">{{ form.phone.label_tag }} {{ form.phone }}</div>
+          <div class="col-12">{{ form.email.label_tag }} {{ form.email }}</div>
+        </div>
+
+        <h6 class="text-uppercase text-muted small mb-3">Shipping Address</h6>
+        <div class="row g-3 mb-4">
+          <div class="col-12">{{ form.address_line.label_tag }} {{ form.address_line }}</div>
+          <div class="col-md-4">{{ form.city.label_tag }} {{ form.city }}</div>
+          <div class="col-md-4">{{ form.state.label_tag }} {{ form.state }}</div>
+          <div class="col-md-4">{{ form.postal_code.label_tag }} {{ form.postal_code }}</div>
+          <div class="col-md-6">{{ form.country.label_tag }} {{ form.country }}</div>
+        </div>
+
+        <button type="submit" class="btn btn-brand btn-lg">Continue to Payment</button>
+      </form>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Order Summary</h6>
+          <ul class="list-group list-group-flush mb-3">
+            {% for item in cart %}
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span>{{ item.product.name }} &times; {{ item.quantity }}</span>
+                <span>₹{{ item.total_price|intcomma }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+          <div class="d-flex justify-content-between fw-bold">
+            <span>Total</span>
+            <span>₹{{ cart.get_total_price|intcomma }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

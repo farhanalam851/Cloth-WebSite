@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="premium-hero">
+
+    <div class="hero-inner container">
+
+        <div class="hero-copy">
+
+            <p class="eyebrow">
+                PREMIUM WHOLESALE APPAREL
+            </p>
+
+            <h1>
+                Built for<br>
+                <span>those who sell.</span>
+            </h1>
+
+            <p class="hero-description">
+                Premium apparel, dependable quality and wholesale pricing
+                for retailers, boutiques and growing businesses.
+            </p>
+
+            <div class="hero-actions">
+
+                <a href="{% url 'products:product_list' %}"
+                   class="premium-btn premium-btn-dark">
+
+                    Explore Collection
+                    <span>↗</span>
+
+                </a>
+
+                <a href="#categories" class="text-link">
+                    Discover categories
+                    <span>↓</span>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-meta">
+
+            <span>EST. 2026</span>
+
+            <span class="meta-line"></span>
+
+            <span>WHOLESALE / B2B</span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     INTRO
+===================================================== -->
+
+<section class="brand-intro">
+
+    <div class="container">
+
+        <div class="intro-grid">
+
+            <div class="intro-label">
+
+                <span>01</span>
+
+                <span>OUR APPROACH</span>
+
+            </div>
+
+
+            <div class="intro-content">
+
+                <h2>
+                    Quality isn't an option.
+                    <br>
+                    <em>It's the standard.</em>
+                </h2>
+
+                <p>
+                    We source and deliver apparel designed for businesses
+                    that care about quality, consistency and value.
+                    From everyday essentials to statement pieces,
+                    our collection is made to move from supplier to shelf.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     CATEGORIES
+===================================================== -->
+
+{% if categories %}
+
+<section class="categories-section" id="categories">
+
+    <div class="container">
+
+        <div class="section-top">
+
+            <div>
+
+                <p class="eyebrow dark">
+                    COLLECTION
+                </p>
+
+                <h2 class="section-title">
+                    Shop by category
+                </h2>
+
+            </div>
+
+            <span class="section-number">
+                02 / 04
+            </span>
+
+        </div>
+
+
+        <div class="category-grid">
+
+            {% for category in categories %}
+
+            <a href="{{ category.get_absolute_url }}"
+               class="category-item">
+
+                <div class="category-number">
+
+                    {% if forloop.counter < 10 %}
+                        0{{ forloop.counter }}
+                    {% else %}
+                        {{ forloop.counter }}
+                    {% endif %}
+
+                </div>
+
+
+                <div class="category-name">
+
+                    {{ category.name }}
+
+                </div>
+
+
+                <div class="category-arrow">
+
+                    ↗
+
+                </div>
+
+            </a>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     FEATURED PRODUCTS
+===================================================== -->
+
+{% if featured %}
+
+<section class="products-section">
+
+    <div class="container">
+
+        <div class="section-top">
+
+            <div>
+
+                <p class="eyebrow dark">
+                    SELECTED PIECES
+                </p>
+
+                <h2 class="section-title">
+                    Featured products
+                </h2>
+
+            </div>
+
+
+            <a href="{% url 'products:product_list' %}"
+               class="view-all">
+
+                View all products
+                <span>↗</span>
+
+            </a>
+
+        </div>
+
+
+        <!-- IMPORTANT:
+             Do NOT add another col-* around the include.
+             _product_card.html already handles its own column.
+        -->
+
+        <div class="row g-4 premium-products">
+
+            {% for product in featured %}
+
+                {% include "products/_product_card.html" %}
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     STATEMENT
+===================================================== -->
+
+<section class="statement-section">
+
+    <div class="container">
+
+        <div class="statement-inner">
+
+            <p class="eyebrow">
+                MADE FOR BUSINESS
+            </p>
+
+            <h2>
+                Better products.
+                <br>
+                <span>Better business.</span>
+            </h2>
+
+            <p>
+                Wholesale apparel without unnecessary complexity.
+                Browse, order and grow with a supplier built around
+                your business.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     NEW ARRIVALS
+===================================================== -->
+
+{% if latest %}
+
+<section class="products-section latest-section">
+
+    <div class="container">
+
+        <div class="section-top">
+
+            <div>
+
+                <p class="eyebrow dark">
+                    THE LATEST
+                </p>
+
+                <h2 class="section-title">
+                    New arrivals
+                </h2>
+
+            </div>
+
+
+            <span class="section-number">
+                04 / 04
+            </span>
+
+        </div>
+
+
+        <div class="row g-4 premium-products">
+
+            {% for product in latest %}
+
+                {% include "products/_product_card.html" %}
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     FINAL CTA
+===================================================== -->
+
+<section class="final-cta">
+
+    <div class="container">
+
+        <div class="final-cta-inner">
+
+            <p class="eyebrow">
+                READY TO WORK TOGETHER?
+            </p>
+
+            <h2>
+                Stock something
+                <br>
+                <em>worth selling.</em>
+            </h2>
+
+
+            <a href="{% url 'products:product_list' %}"
+               class="premium-btn premium-btn-light">
+
+                Browse wholesale collection
+
+                <span>↗</span>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+{% endblock %}

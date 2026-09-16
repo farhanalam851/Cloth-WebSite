@@ -1,0 +1,29 @@
+{% load humanize %}
+<div class="col-6 col-md-4 col-lg-3">
+  <div class="card product-card h-100 shadow-sm">
+    <a href="{{ product.get_absolute_url }}">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+      {% else %}
+        <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height:260px;">
+          <span class="text-muted small">No image</span>
+        </div>
+      {% endif %}
+    </a>
+    <div class="card-body d-flex flex-column">
+      <h6 class="mb-1">
+        <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-dark">{{ product.name }}</a>
+      </h6>
+      <p class="text-muted small mb-1">{{ product.category.name }}</p>
+      <p class="fw-bold mb-1">₹{{ product.price|intcomma }} <span class="fw-normal small text-muted">/ unit</span></p>
+      <span class="badge bg-secondary moq-badge align-self-start mb-2">MOQ: {{ product.moq }}</span>
+      <div class="mt-auto">
+        {% if product.in_stock %}
+          <span class="badge bg-success-subtle text-success small">In stock</span>
+        {% else %}
+          <span class="badge bg-danger-subtle text-danger small">Out of stock</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

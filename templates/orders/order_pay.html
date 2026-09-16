@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Payment — ClothBrand{% endblock %}
+{% block content %}
+<div class="container my-5 text-center">
+  <div class="card mx-auto" style="max-width: 480px;">
+    <div class="card-body p-4">
+      <h1 class="h5 mb-3">Complete Your Payment</h1>
+      <p class="text-muted">Order #{{ order.id }}</p>
+      <h2 class="h3 mb-4">₹{{ order.get_total_cost|intcomma }}</h2>
+      <p class="text-muted small">You'll be redirected to Razorpay's secure checkout to pay by UPI, card, or netbanking.</p>
+      <button id="rzp-button" class="btn btn-brand btn-lg w-100 mt-2">Pay Now</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  const options = {
+    "key": "{{ razorpay_key_id }}",
+    "amount": "{{ amount_paise }}",
+    "currency": "INR",
+    "name": "ClothBrand",
+    "description": "Order #{{ order.id }}",
+    "order_id": "{{ razorpay_order_id }}",
+    "prefill": {
+      "name": "{{ order.full_name }}",
+      "email": "{{ order.email }}",
+      "contact": "{{ order.phone }}"
+    },
+    "notes": {
+      "order_id": "{{ order.id }}"
+    },
+    "theme": {
+      "color": "#1c1c1c"
+    },
+    // Razorpay will POST the payment id/order id/signature straight to this
+    // URL once payment completes, which our payment_callback view verifies.
+    "callback_url": "{{ callback_url }}"
+  };
+
+  const rzp = new Razorpay(options);
+
+  document.getElementById('rzp-button').onclick = function (e) {
+    rzp.open();
+    e.preventDefault();
+  };
+
+  rzp.on('payment.failed', function (response) {
+    window.location.href = "{% url 'orders:order_failed' order.id %}";
+  });
+</script>
+{% endblock %}

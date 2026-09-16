@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}My Profile — ClothBrand{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <div class="card mx-auto" style="max-width: 560px;">
+    <div class="card-body p-4">
+      <h1 class="h5 mb-4">Business Profile</h1>
+      <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-brand">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

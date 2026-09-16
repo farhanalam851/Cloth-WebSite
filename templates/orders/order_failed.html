@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Payment Failed — ClothBrand{% endblock %}
+{% block content %}
+<div class="container my-5 text-center">
+  <div class="card mx-auto" style="max-width: 560px;">
+    <div class="card-body p-5">
+      <div class="display-4 text-danger mb-3">&times;</div>
+      <h1 class="h4 mb-2">Payment Failed</h1>
+      <p class="text-muted">We couldn't confirm payment for Order #{{ order.id }}. No amount has been charged if the popup was closed early; otherwise please contact support before retrying.</p>
+      <a href="{% url 'orders:order_pay' order.id %}" class="btn btn-brand mt-2">Try Again</a>
+      <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary mt-2">Back to Catalog</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}My Orders — ClothBrand{% endblock %}
+{% block content %}
+<div class="container my-4">
+  <h1 class="h4 mb-4">My Orders</h1>
+  {% if orders %}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead><tr><th>Order</th><th>Date</th><th>Status</th><th>Total</th><th></th></tr></thead>
+        <tbody>
+          {% for order in orders %}
+            <tr>
+              <td>#{{ order.id }}</td>
+              <td>{{ order.created_at|date:"d M Y" }}</td>
+              <td>
+                {% if order.status == 'paid' or order.status == 'shipped' or order.status == 'delivered' %}
+                  <span class="badge bg-success">{{ order.get_status_display }}</span>
+                {% elif order.status == 'cancelled' or order.status == 'failed' %}
+                  <span class="badge bg-danger">{{ order.get_status_display }}</span>
+                {% else %}
+                  <span class="badge bg-secondary">{{ order.get_status_display }}</span>
+                {% endif %}
+              </td>
+              <td>₹{{ order.get_total_cost|intcomma }}</td>
+              <td class="text-end">
+                {% if order.status == 'pending' %}
+                  <a href="{% url 'orders:order_pay' order.id %}" class="btn btn-sm btn-brand">Pay Now</a>
+                  <form action="{% url 'orders:order_cancel' order.id %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Cancel this order?');">Cancel</button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted">You haven't placed any orders yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

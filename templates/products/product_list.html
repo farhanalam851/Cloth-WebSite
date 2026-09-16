@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Catalog — ClothBrand{% endblock %}
+{% block content %}
+<div class="container my-4">
+  <div class="row">
+    <div class="col-lg-3 mb-4">
+      <h6 class="text-uppercase text-muted small">Categories</h6>
+      <div class="list-group mb-4">
+        <a href="{% url 'products:product_list' %}" class="list-group-item list-group-item-action {% if not active_category %}active{% endif %}">All</a>
+        {% for c in categories %}
+          <a href="?category={{ c.slug }}" class="list-group-item list-group-item-action {% if active_category == c.slug %}active{% endif %}">{{ c.name }}</a>
+        {% endfor %}
+      </div>
+      <h6 class="text-uppercase text-muted small">Sort</h6>
+      <div class="list-group">
+        <a href="?sort=price_low{% if active_category %}&category={{ active_category }}{% endif %}" class="list-group-item list-group-item-action">Price: Low to High</a>
+        <a href="?sort=price_high{% if active_category %}&category={{ active_category }}{% endif %}" class="list-group-item list-group-item-action">Price: High to Low</a>
+      </div>
+    </div>
+
+    <div class="col-lg-9">
+      <h1 class="h4 mb-4">
+        {% if query %}Search results for "{{ query }}"{% else %}Product Catalog{% endif %}
+      </h1>
+
+      {% if page_obj.object_list %}
+        <div class="row g-4">
+          {% for product in page_obj %}
+            {% include "products/_product_card.html" %}
+          {% endfor %}
+        </div>
+
+        <nav class="mt-4">
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+              <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+              <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% else %}
+        <p class="text-muted">No products found.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
