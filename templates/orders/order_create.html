@@ -38,15 +38,17 @@
           <ul class="list-group list-group-flush mb-3">
             {% for item in cart %}
               <li class="list-group-item d-flex justify-content-between px-0">
-                <span>{{ item.product.name }} &times; {{ item.quantity }}</span>
+                <span>{{ item.product.name }}{% if item.variant %} ({{ item.variant.get_size_display }}/{{ item.variant.color }}){% endif %} &times; {{ item.quantity }}</span>
                 <span>₹{{ item.total_price|intcomma }}</span>
               </li>
             {% endfor %}
           </ul>
-          <div class="d-flex justify-content-between fw-bold">
-            <span>Total</span>
-            <span>₹{{ cart.get_total_price|intcomma }}</span>
-          </div>
+          <table class="table table-sm mb-0">
+            <tr><td class="text-muted">Subtotal</td><td class="text-end">₹{{ subtotal|intcomma }}</td></tr>
+            <tr><td class="text-muted">GST ({{ tax_rate_percent }}%)</td><td class="text-end">₹{{ tax_estimate|intcomma }}</td></tr>
+            <tr><td class="text-muted">Shipping</td><td class="text-end">₹{{ shipping_estimate|intcomma }}</td></tr>
+            <tr class="fw-bold border-top"><td>Total</td><td class="text-end">₹{{ total_estimate|intcomma }}</td></tr>
+          </table>
         </div>
       </div>
     </div>

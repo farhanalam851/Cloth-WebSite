@@ -1,57 +1,238 @@
 :root {
-  --brand-dark: #1c1c1c;
-  --brand-accent: #b08d57; /* warm brass, feels premium for a clothing brand */
-  --brand-bg: #faf9f7;
+  --brand-dark: #14110f;
+  --brand-dark-soft: #232019;
+  --brand-accent: #b08d57;   /* warm brass */
+  --brand-accent-dark: #8f6f3f;
+  --brand-bg: #faf8f5;
+  --brand-cream: #f3ede3;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 }
 
 body {
   background-color: var(--brand-bg);
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  color: #222;
+  font-family: var(--font-sans);
+  color: #23201c;
 }
 
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif);
+}
+
+/* ---------- Top announcement bar ---------- */
+.announce-bar {
+  background: var(--brand-dark);
+  color: #e8e2d6;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  padding: 6px 0;
+  text-align: center;
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  background-color: var(--brand-dark) !important;
+}
 .navbar-brand {
+  font-family: var(--font-serif);
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+}
+.navbar .nav-link {
+  font-size: 0.92rem;
 }
 
+/* ---------- Buttons ---------- */
 .btn-brand {
   background-color: var(--brand-dark);
   color: #fff;
-  border: none;
+  border: 1px solid var(--brand-dark);
+  border-radius: 2px;
+  letter-spacing: 0.03em;
+  transition: all 0.2s ease;
 }
 .btn-brand:hover {
   background-color: var(--brand-accent);
+  border-color: var(--brand-accent);
   color: #fff;
 }
+.btn-outline-gold {
+  border: 1px solid #fff;
+  color: #fff;
+  border-radius: 2px;
+  letter-spacing: 0.03em;
+}
+.btn-outline-gold:hover {
+  background: #fff;
+  color: var(--brand-dark);
+}
 
+/* ---------- Hero / carousel ---------- */
+.hero-carousel .carousel-item {
+  height: 62vh;
+  min-height: 380px;
+  max-height: 620px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.hero-carousel .carousel-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(20,17,15,0.72) 0%, rgba(20,17,15,0.25) 55%, rgba(20,17,15,0.05) 100%);
+}
+.hero-carousel .carousel-caption {
+  text-align: left;
+  left: 6%;
+  right: auto;
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 560px;
+  z-index: 2;
+}
+.hero-carousel .carousel-caption h1 {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #fff;
+}
+.hero-carousel .carousel-caption p {
+  color: #e8e2d6;
+  font-size: 1.05rem;
+}
+.hero-fallback {
+  background: linear-gradient(135deg, var(--brand-dark) 0%, #3a332a 100%);
+  color: #fff;
+  padding: 6rem 0;
+}
+
+/* ---------- Trust strip ---------- */
+.trust-strip {
+  background: var(--brand-cream);
+  border-top: 1px solid #e7dfd0;
+  border-bottom: 1px solid #e7dfd0;
+}
+.trust-item i {
+  font-size: 1.5rem;
+  color: var(--brand-accent-dark);
+}
+.trust-item .label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.trust-item .sub {
+  font-size: 0.75rem;
+  color: #766f62;
+}
+
+/* ---------- Section headers ---------- */
+.section-heading {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+.section-heading::after {
+  content: '';
+  display: block;
+  width: 56px;
+  height: 2px;
+  background: var(--brand-accent);
+  margin-top: 0.5rem;
+}
+.section-heading.text-center::after {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---------- Category showcase ---------- */
+.category-card {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 220px;
+  display: block;
+  text-decoration: none;
+}
+.category-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.category-card:hover img {
+  transform: scale(1.06);
+}
+.category-card .overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20,17,15,0) 40%, rgba(20,17,15,0.75) 100%);
+}
+.category-card .cat-label {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.category-fallback {
+  height: 220px;
+  background: var(--brand-cream);
+}
+
+/* ---------- Product cards ---------- */
 .product-card {
-  border: none;
-  transition: transform 0.15s ease;
+  border: 1px solid #ece5d8;
+  border-radius: 6px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 .product-card:hover {
   transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(20,17,15,0.10);
 }
 .product-card img {
   height: 260px;
   object-fit: cover;
+  border-radius: 6px 6px 0 0;
 }
-
-.hero {
-  background: linear-gradient(135deg, var(--brand-dark) 0%, #3a3a3a 100%);
-  color: #fff;
-  padding: 5rem 0;
-}
-
 .moq-badge {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Testimonials ---------- */
+.testimonial-card {
+  background: #fff;
+  border: 1px solid #ece5d8;
+  border-radius: 6px;
+  padding: 1.5rem;
+  height: 100%;
+}
+.testimonial-card .stars {
+  color: var(--brand-accent-dark);
+  font-size: 0.9rem;
+}
+
+/* ---------- Newsletter / CTA strip ---------- */
+.cta-strip {
+  background: var(--brand-dark);
+  color: #fff;
+}
+.cta-strip .form-control {
+  border-radius: 2px;
+  border: none;
 }
 
 footer {
   background-color: var(--brand-dark);
-  color: #ccc;
+  color: #b9b2a3;
   padding: 2.5rem 0;
-  margin-top: 4rem;
+  margin-top: 3rem;
 }
-footer a { color: #eee; }
+footer h5, footer h6 { color: #fff; }
+footer a { color: #d8d1c3; text-decoration: none; }
+footer a:hover { color: #fff; text-decoration: underline; }

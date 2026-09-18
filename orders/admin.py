@@ -4,9 +4,9 @@ from .models import Order, OrderItem
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
-    raw_id_fields = ('product',)
+    raw_id_fields = ('product', 'variant')
     extra = 0
-    readonly_fields = ('price',)
+    readonly_fields = ('price', 'size', 'color')
 
 
 @admin.register(Order)
@@ -20,7 +20,11 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ('full_name', 'company_name', 'email', 'phone', 'razorpay_payment_id')
     date_hierarchy = 'created_at'
     inlines = [OrderItemInline]
-    readonly_fields = ('razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature', 'created_at', 'updated_at')
+    readonly_fields = (
+        'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature',
+        'shipping_amount', 'tax_amount', 'tax_rate_percent',
+        'created_at', 'updated_at',
+    )
     fieldsets = (
         ('Customer', {
             'fields': ('user', 'company_name', 'full_name', 'email', 'phone', 'gst_number')
@@ -30,6 +34,9 @@ class OrderAdmin(admin.ModelAdmin):
         }),
         ('Order status', {
             'fields': ('status',)
+        }),
+        ('Shipping & tax', {
+            'fields': ('shipping_amount', 'tax_rate_percent', 'tax_amount')
         }),
         ('Payment (Razorpay)', {
             'fields': ('razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature')

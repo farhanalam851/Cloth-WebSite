@@ -30,6 +30,8 @@
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Cancel this order?');">Cancel</button>
                   </form>
+                {% elif order.is_paid %}
+                  <a href="{% url 'orders:order_invoice' order.id %}" class="btn btn-sm btn-outline-secondary">Download Invoice</a>
                 {% endif %}
               </td>
             </tr>

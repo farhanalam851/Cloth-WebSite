@@ -2,24 +2,27 @@
 Django settings for clothbrand project.
 """
 
-import os
+from decimal import Decimal
 from pathlib import Path
+
+from decouple import Csv, config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # -------------------------------------------------------------------
 # SECURITY
-# In production, move SECRET_KEY, DEBUG and RAZORPAY keys into real
-# environment variables (or a .env file loaded with python-decouple).
+# These are read from a `.env` file in the project root (same folder
+# as manage.py) if one exists, otherwise from real environment
+# variables, otherwise the defaults below are used.
 # -------------------------------------------------------------------
-SECRET_KEY = os.environ.get(
+SECRET_KEY = config(
     'DJANGO_SECRET_KEY',
-    'django-insecure-CHANGE-THIS-BEFORE-GOING-LIVE-a7szzkmps3'
+    default='django-insecure-CHANGE-THIS-BEFORE-GOING-LIVE-a7szzkmps3'
 )
 
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+DEBUG = config('DJANGO_DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
 
 
 # Application definition
@@ -117,12 +120,21 @@ DEFAULT_FROM_EMAIL = 'orders@clothbrand.example.com'
 
 # -------------------------------------------------------------------
 # Razorpay settings
-# Get these from https://dashboard.razorpay.com/app/keys
-# Set real values as environment variables before going live.
+# Get these from https://dashboard.razorpay.com/app/keys and put them
+# in a `.env` file in the project root (see .env.example).
 # -------------------------------------------------------------------
-RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', 'rzp_test_XXXXXXXXXXXX')
-RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', 'YOUR_TEST_SECRET_KEY')
+RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID', default='rzp_test_XXXXXXXXXXXX')
+RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET', default='YOUR_TEST_SECRET_KEY')
 RAZORPAY_CURRENCY = 'INR'
+
+# -------------------------------------------------------------------
+# Shipping & tax
+# Flat shipping rate applied to every order, and a GST percentage applied
+# to the order subtotal. Change these to match your client's actual
+# rates, or wire them up to be editable from the admin later if needed.
+# -------------------------------------------------------------------
+SHIPPING_FLAT_RATE = Decimal(config('SHIPPING_FLAT_RATE', default='99.00'))
+TAX_RATE_PERCENT = Decimal(config('TAX_RATE_PERCENT', default='18.00'))  # standard GST slab
 
 MESSAGE_TAGS = {
     10: 'info', 20: 'success', 25: 'success', 30: 'warning', 40: 'danger',

@@ -7,6 +7,11 @@
     <div class="card-body p-4">
       <h1 class="h5 mb-3">Complete Your Payment</h1>
       <p class="text-muted">Order #{{ order.id }}</p>
+      <table class="table table-sm text-start mb-3">
+        <tr><td class="text-muted">Subtotal</td><td class="text-end">₹{{ order.get_subtotal|intcomma }}</td></tr>
+        <tr><td class="text-muted">GST ({{ order.tax_rate_percent }}%)</td><td class="text-end">₹{{ order.tax_amount|intcomma }}</td></tr>
+        <tr><td class="text-muted">Shipping</td><td class="text-end">₹{{ order.shipping_amount|intcomma }}</td></tr>
+      </table>
       <h2 class="h3 mb-4">₹{{ order.get_total_cost|intcomma }}</h2>
       <p class="text-muted small">You'll be redirected to Razorpay's secure checkout to pay by UPI, card, or netbanking.</p>
       <button id="rzp-button" class="btn btn-brand btn-lg w-100 mt-2">Pay Now</button>

@@ -25,12 +25,15 @@
                   {{ item.product.name }}
                 </a>
                 <div class="text-muted small">SKU: {{ item.product.sku }}</div>
+                {% if item.variant %}
+                  <div class="text-muted small">Size: {{ item.variant.get_size_display }} &middot; Colour: {{ item.variant.color }}</div>
+                {% endif %}
               </td>
               <td>₹{{ item.price|intcomma }}</td>
               <td>{{ item.quantity }}</td>
               <td class="fw-semibold">₹{{ item.total_price|intcomma }}</td>
               <td>
-                <form action="{% url 'cart:cart_remove' item.product.id %}" method="post">
+                <form action="{% url 'cart:cart_remove' item.key %}" method="post">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
                 </form>

@@ -8,9 +8,19 @@
       <div class="display-4 text-success mb-3">&#10003;</div>
       <h1 class="h4 mb-2">Payment Successful</h1>
       <p class="text-muted">Order #{{ order.id }} has been confirmed.</p>
-      <p class="fw-bold h5">₹{{ order.get_total_cost|intcomma }}</p>
+
+      <table class="table table-sm text-start w-75 mx-auto mt-4">
+        <tr><td class="text-muted">Subtotal</td><td class="text-end">₹{{ order.get_subtotal|intcomma }}</td></tr>
+        <tr><td class="text-muted">GST ({{ order.tax_rate_percent }}%)</td><td class="text-end">₹{{ order.tax_amount|intcomma }}</td></tr>
+        <tr><td class="text-muted">Shipping</td><td class="text-end">₹{{ order.shipping_amount|intcomma }}</td></tr>
+        <tr class="fw-bold border-top"><td>Total Paid</td><td class="text-end">₹{{ order.get_total_cost|intcomma }}</td></tr>
+      </table>
+
       <p class="text-muted small">A confirmation email has been sent to {{ order.email }}. Our team will reach out with dispatch details shortly.</p>
-      <a href="{% url 'products:product_list' %}" class="btn btn-brand mt-3">Continue Shopping</a>
+      <div class="d-flex gap-2 justify-content-center mt-3">
+        <a href="{% url 'orders:order_invoice' order.id %}" class="btn btn-outline-secondary">Download Invoice</a>
+        <a href="{% url 'products:product_list' %}" class="btn btn-brand">Continue Shopping</a>
+      </div>
     </div>
   </div>
 </div>

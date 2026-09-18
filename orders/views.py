@@ -1,15 +1,18 @@
 import razorpay
+from decimal import Decimal
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from cart.cart import Cart
 from .forms import OrderCreateForm
+from .invoice import generate_invoice_pdf
 from .models import Order, OrderItem
 
 
@@ -37,9 +40,14 @@ def order_create(request):
                     OrderItem.objects.create(
                         order=order,
                         product=item['product'],
+                        variant=item['variant'],
+                        size=item['variant'].get_size_display() if item['variant'] else '',
+                        color=item['variant'].color if item['variant'] else '',
                         price=item['price'],
                         quantity=item['quantity'],
                     )
+
+                order.calculate_shipping_and_tax()
 
             return redirect('orders:order_pay', order_id=order.id)
     else:
@@ -48,7 +56,23 @@ def order_create(request):
             initial = {'full_name': request.user.get_full_name(), 'email': request.user.email}
         form = OrderCreateForm(initial=initial)
 
-    return render(request, 'orders/order_create.html', {'cart': cart, 'form': form})
+    # Live estimate shown on the checkout page itself — the exact same
+    # calculation Order.calculate_shipping_and_tax() will apply once the
+    # order is actually created.
+    subtotal = cart.get_total_price()
+    shipping_estimate = settings.SHIPPING_FLAT_RATE if subtotal > 0 else Decimal('0.00')
+    tax_estimate = (subtotal * settings.TAX_RATE_PERCENT / Decimal('100')).quantize(Decimal('0.01'))
+    total_estimate = subtotal + shipping_estimate + tax_estimate
+
+    return render(request, 'orders/order_create.html', {
+        'cart': cart,
+        'form': form,
+        'subtotal': subtotal,
+        'shipping_estimate': shipping_estimate,
+        'tax_estimate': tax_estimate,
+        'tax_rate_percent': settings.TAX_RATE_PERCENT,
+        'total_estimate': total_estimate,
+    })
 
 
 @login_required
@@ -115,11 +139,16 @@ def payment_callback(request):
     order.status = Order.STATUS_PAID
     order.save(update_fields=['razorpay_payment_id', 'razorpay_signature', 'status'])
 
-    # Reduce stock for each item
-    for item in order.items.select_related('product'):
-        product = item.product
-        product.stock = max(0, product.stock - item.quantity)
-        product.save(update_fields=['stock'])
+    # Reduce stock for each item — per-variant if this product has variants,
+    # otherwise the product's own stock field.
+    for item in order.items.select_related('product', 'variant'):
+        if item.variant:
+            item.variant.stock = max(0, item.variant.stock - item.quantity)
+            item.variant.save(update_fields=['stock'])
+        else:
+            product = item.product
+            product.stock = max(0, product.stock - item.quantity)
+            product.save(update_fields=['stock'])
 
     # Clear the cart
     Cart(request).clear()
@@ -170,3 +199,12 @@ def order_cancel(request, order_id):
         order.save(update_fields=['status'])
         messages.success(request, f'Order #{order.id} has been cancelled.')
     return redirect('orders:order_history')
+
+
+@login_required
+def order_invoice(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user, status=Order.STATUS_PAID)
+    buffer = generate_invoice_pdf(order)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="invoice_order_{order.id}.pdf"'
+    return response

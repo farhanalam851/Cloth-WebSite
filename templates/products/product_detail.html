@@ -28,6 +28,15 @@
       <h1 class="h3">{{ product.name }}</h1>
       <p class="text-muted">SKU: {{ product.sku }}{% if product.fabric %} &middot; {{ product.fabric }}{% endif %}</p>
 
+      {% if product.average_rating %}
+        <p class="mb-2">
+          <span class="text-warning">{% for i in "12345" %}{% if forloop.counter <= product.average_rating %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</span>
+          <span class="text-muted small">{{ product.average_rating }} out of 5 ({{ product.review_count }} review{{ product.review_count|pluralize }})</span>
+        </p>
+      {% else %}
+        <p class="text-muted small mb-2">No reviews yet</p>
+      {% endif %}
+
       <h2 class="h4 my-3">₹{{ product.price|intcomma }} <span class="fs-6 fw-normal text-muted">per unit</span></h2>
 
       <p>{{ product.description|linebreaks }}</p>
@@ -35,20 +44,33 @@
       <div class="mb-3">
         <span class="badge bg-secondary">Minimum Order Quantity: {{ product.moq }} units</span>
         {% if product.in_stock %}
-          <span class="badge bg-success-subtle text-success">{{ product.stock }} in stock</span>
+          <span class="badge bg-success-subtle text-success">{{ product.total_stock }} in stock</span>
         {% else %}
           <span class="badge bg-danger-subtle text-danger">Out of stock</span>
         {% endif %}
       </div>
 
       {% if product.in_stock %}
-        <form action="{% url 'cart:cart_add' product.id %}" method="post" class="row g-2 align-items-center">
+        <form action="{% url 'cart:cart_add' product.id %}" method="post" class="row g-2 align-items-end">
           {% csrf_token %}
+
+          {% if product.has_variants %}
+            <div class="col-auto">
+              <label class="form-label small mb-0">Size / Colour</label>
+              <select name="variant_id" class="form-select" required>
+                <option value="">Select an option</option>
+                {% for variant in product.variants.all %}
+                  <option value="{{ variant.id }}" {% if not variant.in_stock %}disabled{% endif %}>
+                    {{ variant.get_size_display }} / {{ variant.color }}{% if not variant.in_stock %} (out of stock){% endif %}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endif %}
+
           <div class="col-auto">
-            <label class="col-form-label">Quantity</label>
-          </div>
-          <div class="col-auto">
-            <input type="number" name="quantity" class="form-control" value="{{ product.moq }}" min="{{ product.moq }}" max="{{ product.stock }}" style="width:110px;">
+            <label class="form-label small mb-0">Quantity</label>
+            <input type="number" name="quantity" class="form-control" value="{{ product.moq }}" min="{{ product.moq }}" style="width:110px;">
           </div>
           <input type="hidden" name="override" value="True">
           <div class="col-auto">
@@ -58,6 +80,48 @@
       {% else %}
         <button class="btn btn-secondary" disabled>Out of Stock</button>
       {% endif %}
+    </div>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-lg-8">
+      <h2 class="h5 mb-3">Reviews ({{ product.review_count }})</h2>
+
+      {% if user.is_authenticated %}
+        <div class="card mb-4">
+          <div class="card-body">
+            <h6 class="card-title">{% if user_review %}Update your review{% else %}Write a review{% endif %}</h6>
+            <form method="post" action="{% url 'products:review_add' product.slug %}">
+              {% csrf_token %}
+              <div class="mb-2">
+                <label class="form-label small">Rating</label>
+                {{ review_form.rating }}
+              </div>
+              <div class="mb-2">
+                <label class="form-label small">Comment (optional)</label>
+                {{ review_form.comment }}
+              </div>
+              <button type="submit" class="btn btn-sm btn-brand">{% if user_review %}Update Review{% else %}Submit Review{% endif %}</button>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <p class="text-muted small">
+          <a href="{% url 'accounts:login' %}?next={{ request.path }}">Login</a> to write a review.
+        </p>
+      {% endif %}
+
+      {% for review in product.reviews.all %}
+        <div class="border-bottom pb-2 mb-2">
+          <div class="text-warning small">
+            {% for i in "12345" %}{% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}
+          </div>
+          <div class="fw-semibold small">{{ review.user.username }} <span class="text-muted fw-normal">&middot; {{ review.created_at|date:"d M Y" }}</span></div>
+          {% if review.comment %}<p class="mb-0 small">{{ review.comment }}</p>{% endif %}
+        </div>
+      {% empty %}
+        <p class="text-muted small">No reviews yet — be the first to review this product.</p>
+      {% endfor %}
     </div>
   </div>
 
